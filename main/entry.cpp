@@ -37,7 +37,7 @@ extern "C" __declspec(dllexport) void entry1(const char *boot_exe_path, const ch
     QSplashScreen splash(pixmap);
     splash.show();
     qdebug_line();
-    SpiderCore core(splash, main_dll_path);
+    SpiderCore core(splash, boot_exe_path, main_dll_path);
     qdebug_line();
     SpiderMain w;
     qdebug_line();

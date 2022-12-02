@@ -199,7 +199,7 @@ SpiderMain::SpiderMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::Spider
     {
         g_core().open_msys2(this, path, ui->explorerWidget->currentDir());
     });
-    ui->explorerWidget->setRootDir(g_core().env()["docs"] + "/.repo");
+    ui->explorerWidget->setRootDir(g_core().env()["repoRoot"]);
     //
     connect(ui->explorerWidget, &ExplorerForm::signal_fileDoubleClicked,
             [this](QString path)
@@ -613,7 +613,7 @@ void SpiderMain::on_actionManageEnvVars_triggered()
         QMessageBox::information(this, "確認", "環境変数を記録するホームリポジトリを選択してください");
         return;
     }
-    QString repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+    QString repoDir = g_core().env()["repoRoot"] + "/" + repo;
     EnvVarDialog dlg(repoDir, g_core().env(), repo);
     dlg.exec();
 }

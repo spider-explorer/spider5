@@ -62,7 +62,7 @@ SpiderForm::SpiderForm(QWidget *parent) : QWidget(parent), ui(new Ui::SpiderForm
         QListWidgetItem *item = ui->listWidget->currentItem();
         this->on_listWidget_itemClicked(item);
         QMenu contextMenu("Context menu", this);
-        QString folder = g_core().env()["docs"] + "/.repo/" + item->text();
+        QString folder = g_core().env()["repoRoot"] + "/" + item->text();
         emit signal_repoRequestedContextMenu(contextMenu, folder);
         contextMenu.exec(ui->listWidget->viewport()->mapToGlobal(pos));
     });
@@ -88,7 +88,7 @@ SpiderForm::SpiderForm(QWidget *parent) : QWidget(parent), ui(new Ui::SpiderForm
     connect(ui->listWidget, &JListWidget::signal_mouseDoubleClick,
             [this](QListWidgetItem *item, Qt::MouseButton button, Qt::KeyboardModifiers modifiers)
     {
-        QString repoDir = g_core().env()["docs"] + "/.repo/" + item->text();
+        QString repoDir = g_core().env()["repoRoot"] + "/" + item->text();
         emit signal_repoDoubleClicked(repoDir, button, modifiers);
     });
 }
@@ -104,7 +104,7 @@ void SpiderForm::reloadNameList(bool force)
     QDir::Filters filters = QDir::Dirs;
     // 対象フラグ
     QDirIterator::IteratorFlags flags = QDirIterator::NoIteratorFlags;
-    QDirIterator it0(g_core().env()["docs"] + "/.repo", filters, flags);
+    QDirIterator it0(g_core().env()["repoRoot"], filters, flags);
     // QStringList realRepoList;
     QStringList realRepoList;
     while (it0.hasNext())
@@ -169,7 +169,7 @@ void SpiderForm::setCurrentFolder(QString path)
     for (int i = 0; i < ui->listWidget->count(); i++)
     {
         QListWidgetItem *item = ui->listWidget->item(i);
-        QString itemPath = g_core().env()["docs"] + "/.repo/" + item->text();
+        QString itemPath = g_core().env()["repoRoot"] + "/" + item->text();
         // qDebug() << "path:" << path;
         // qDebug() << "itemPath:" << itemPath;
         if (path == itemPath || path.startsWith(itemPath + "/"))
@@ -194,7 +194,7 @@ void SpiderForm::checkGitStatus(QString path, bool full)
     {
         QListWidgetItem *item = ui->listWidget->item(i);
         repo = item->text();
-        repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+        repoDir = g_core().env()["repoRoot"] + "/" + repo;
         if (repoDir == path)
         {
             found = item;
@@ -244,7 +244,7 @@ void SpiderForm::checkGitStatusAll(bool full)
     {
         QListWidgetItem *item = ui->listWidget->item(i);
         QString repo = item->text();
-        QString repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+        QString repoDir = g_core().env()["repoRoot"] + "/" + repo;
         this->checkGitStatus(repoDir, full);
     }
 }
@@ -256,7 +256,7 @@ void SpiderForm::on_splitter_1_splitterMoved(int pos, int index)
 }
 void SpiderForm::on_listWidget_itemClicked(QListWidgetItem *item)
 {
-    QString repoDir = g_core().env()["docs"] + "/.repo/" + item->text();
+    QString repoDir = g_core().env()["repoRoot"] + "/" + item->text();
     emit signal_repoClicked(repoDir);
 }
 void SpiderForm::on_btnCloneRepo_clicked()
@@ -270,9 +270,7 @@ void SpiderForm::on_btnCloneRepo_clicked()
     strm << QString("set -uvx") << Qt::endl;
     strm << QString("set -e") << Qt::endl;
     strm << QString("pwd") << Qt::endl;
-    strm << QString("cd %1").arg(g_core().env()["docs"]) << Qt::endl;
-    strm << QString("mkdir -p .repo") << Qt::endl;
-    strm << QString("cd .repo") << Qt::endl;
+    strm << QString("cd %1").arg(g_core().env()["repoRoot"]) << Qt::endl;
     strm << QString("git clone --recursive %1").arg(repoUrl) << Qt::endl;
     strm << Qt::flush;
     QString cmdLines = *strm.string();

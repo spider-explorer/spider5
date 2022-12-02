@@ -24,20 +24,7 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 {
     ui->setupUi(this);
     //
-    this->reloadExplorer(g_core().env()["docs"] + "/.repo");
-#if 0x0
-    m_topDir = g_core().env()["docs"] + "/.repo";
-    m_dirModel.setFilter(QDir::NoDotAndDotDot | QDir::AllDirs);
-    // m_dirModel.setFilter(QDir::NoDotAndDotDot | QDir::AllDirs | QDir::Files);
-    m_dirModel.setRootPath(m_topDir);
-    ui->treeView->setModel(&m_dirModel);
-    ui->treeView->setRootIndex(m_dirModel.index(m_topDir));
-    // ui->treeView->setRootIsDecorated( true );
-    ui->treeView->hideColumn(1);
-    ui->treeView->hideColumn(2);
-    ui->treeView->hideColumn(3);
-    ui->labelFileModel->setText("");
-#endif
+    this->reloadExplorer(g_core().env()["repoRoot"]);
     connect(&m_fileModel, &QFileSystemModel::rootPathChanged,
             [this](const QString &newPath)
     {
@@ -202,7 +189,7 @@ void MainWindow::reloadNameList(bool force)
     QDir::Filters filters = QDir::Dirs;
     // 対象フラグ
     QDirIterator::IteratorFlags flags = QDirIterator::NoIteratorFlags;
-    QDirIterator it0(g_core().env()["docs"] + "/.repo", filters, flags);
+    QDirIterator it0(g_core().env()["repoRoot"], filters, flags);
     // QStringList realRepoList;
     QStringList realRepoList;
     while (it0.hasNext())
@@ -266,7 +253,7 @@ QString MainWindow::selectedRepoName()
 {
     // MySettings settings;
     QString repo = g_settings().value("selected/repoName").toString();
-    QString repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+    QString repoDir = g_core().env()["repoRoot"] + "/" + repo;
     qDebug() << repoDir << QDir(repoDir).exists();
     if (!QDir(repoDir).exists())
     {
@@ -318,9 +305,7 @@ void MainWindow::clone_repo()
     strm << QString("set -uvx") << Qt::endl;
     strm << QString("set -e") << Qt::endl;
     strm << QString("pwd") << Qt::endl;
-    strm << QString("cd %1").arg(g_core().env()["docs"]) << Qt::endl;
-    strm << QString("mkdir -p .repo") << Qt::endl;
-    strm << QString("cd .repo") << Qt::endl;
+    strm << QString("cd %1").arg(g_core().env()["repoRoot"]) << Qt::endl;
     strm << QString("git clone --recursive %1").arg(repoUrl) << Qt::endl;
     strm << Qt::flush;
     QString cmdLines = *strm.string();
@@ -341,8 +326,7 @@ void MainWindow::remove_repo(QString repo)
     strm << QString("set -uvx") << Qt::endl;
     strm << QString("set -e") << Qt::endl;
     strm << QString("pwd") << Qt::endl;
-    strm << QString("cd %1").arg(g_core().env()["docs"]) << Qt::endl;
-    strm << QString("cd .repo") << Qt::endl;
+    strm << QString("cd %1").arg(g_core().env()["repoRoot"]) << Qt::endl;
     strm << QString("mv %1 %1.deleting").arg(repo) << Qt::endl;
     strm << QString("rm -rvf %1.deleting").arg(repo) << Qt::endl;
     strm << Qt::flush;
@@ -364,9 +348,9 @@ void MainWindow::refresh_repo(QString repo)
     strm << QString("set -uvx") << Qt::endl;
     strm << QString("set -e") << Qt::endl;
     strm << QString("pwd") << Qt::endl;
-    strm << QString("cd %1/.repo/%2").arg(g_core().env()["docs"]).arg(repo) << Qt::endl;
+    strm << QString("cd %1/%2").arg(g_core().env()["repoRoot"]).arg(repo) << Qt::endl;
     strm << QString("url=`git config --get remote.origin.url`") << Qt::endl;
-    strm << QString("cd %1/.repo").arg(g_core().env()["docs"]) << Qt::endl;
+    strm << QString("cd %1").arg(g_core().env()["repoRoot"]) << Qt::endl;
     strm << QString("mv %1 %1.deleting").arg(repo) << Qt::endl;
     strm << QString("rm -rvf %1.deleting").arg(repo) << Qt::endl;
     strm << QString("git clone --recursive $url %1").arg(repo) << Qt::endl;
@@ -431,7 +415,7 @@ void MainWindow::showContextMenuForListWidget1(QListWidget *listWidget, QMenu &c
     QListWidgetItem *item = ui->listWidget->item(row);
     QString repo = item->text();
     qDebug() << repo;
-    QString repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+    QString repoDir = g_core().env()["repoRoot"] + "/" + repo;
     // MySettings settings;
     //  QMenu contextMenu("Context menu", this);
     QAction *actSetAsHome = new QAction(QString("%1 を選択").arg(item->text()), this);
@@ -627,7 +611,7 @@ void MainWindow::doubleClickedButtons(QListWidgetItem *item, Qt::MouseButton but
     if (item == nullptr)
     {
         auto uhomeName = this->selectedRepoName();
-        QString repoDir = g_core().env()["docs"] + "/.repo/" + uhomeName;
+        QString repoDir = g_core().env()["repoRoot"] + "/" + uhomeName;
         if (modifiers.testFlag(Qt::ShiftModifier) == true)
         {
             g_core().open_nyagos(this, repoDir);
@@ -644,7 +628,7 @@ void MainWindow::doubleClickedButtons(QListWidgetItem *item, Qt::MouseButton but
     qDebug() << "button=" << button;
     qDebug() << "modifiers=" << modifiers;
     QString repo = item->text();
-    QString repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+    QString repoDir = g_core().env()["repoRoot"] + "/" + repo;
     if (modifiers.testFlag(Qt::ControlModifier) == true)
     {
         qDebug() << "(3)";
@@ -706,8 +690,6 @@ void MainWindow::on_btnResetSelection_clicked()
 }
 void MainWindow::on_btnNyagos_clicked()
 {
-    // auto uhomeName = this->selectedRepoName();
-    // QString repoDir = g_core().env()["docs"] + "/.repo/" + uhomeName;
     QString path = ui->labelFileModel->text();
     if (path.isEmpty())
     {
@@ -750,7 +732,7 @@ void MainWindow::on_btnEnvVarManage_clicked()
         QMessageBox::information(this, "確認", "ホームリポジトリを選択してください");
         return;
     }
-    QString repoDir = g_core().env()["docs"] + "/.repo/" + repo;
+    QString repoDir = g_core().env()["repoRoot"] + "/" + repo;
     EnvVarDialog dlg(repoDir, g_core().env(), repo);
     dlg.exec();
 }
@@ -921,7 +903,7 @@ void MainWindow::on_actionLibreOffice_triggered()
 }
 void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
 {
-    QString path = g_core().env()["docs"] + "/.repo/" + item->text();
+    QString path = g_core().env()["repoRoot"] + "/" + item->text();
     ui->treeView->setCurrentIndex(m_dirModel.index(path));
     m_fileModel.setFilter(QDir::NoDot | QDir::AllDirs | QDir::Files);
     m_fileModel.setRootPath(path);
@@ -930,7 +912,6 @@ void MainWindow::on_listWidget_itemClicked(QListWidgetItem *item)
 }
 void MainWindow::on_treeView_clicked(const QModelIndex &index)
 {
-    // QString rootDir = g_core().env()["docs"] + "/.repo";
     QString path = m_dirModel.filePath(index);
     if (path == m_topDir || QFileInfo(path).absolutePath() == m_topDir)
     {
@@ -947,7 +928,6 @@ void MainWindow::on_treeView_clicked(const QModelIndex &index)
 }
 void MainWindow::on_listView_doubleClicked(const QModelIndex &index)
 {
-    /// QString rootDir = g_core().env()["docs"] + "/.repo";
     QFileInfo info = m_fileModel.fileInfo(index);
     QString path1 = m_fileModel.filePath(index);
     QString path = info.absoluteFilePath();

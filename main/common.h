@@ -40,7 +40,7 @@ class SpiderSettings
 public:
     SpiderSettings(QMap<QString, QString> env, QString repo)
     {
-        QString repoDir = env["docs"] + "/.repo";
+        QString repoDir = env["repoRoot"];
         QString fileName = repoDir;
         if (!repo.isEmpty())
         {

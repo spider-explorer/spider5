@@ -101,7 +101,7 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
     qdebug_line2("SpiderCore::prepareProgram(10)", progName);
     return junctionDir;
 }
-SpiderCore::SpiderCore(QSplashScreen &splash, const QString &mainDllPath) : m_splash(splash), m_settings("spider")
+SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const QString &mainDllPath) : m_splash(splash), m_settings("spider")
 {
     qdebug_line1("SpiderCore::SpiderCore(1)");
     s_core = this;
@@ -112,14 +112,18 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &mainDllPath) : m_sp
     m_one_moment.setPixmap(pixmap);
     qdebug_line1("SpiderCore::SpiderCore(2)");
     //
+    QFileInfo bootExe(bootExePath);
     QFileInfo mainDll(mainDllPath);
+    m_env["bootDir"] = bootExe.absolutePath();
     m_env["dir"] = mainDll.absolutePath();
     //m_env["dir"] = mainDll.path();
     m_env["temp"] = m_env["dir"] + "/temp";
     m_env["prof"] = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
-    m_env["swRoot"] = m_env["prof"] + "/.software";
+    //m_env["swRoot"] = m_env["prof"] + "/.software";
+    m_env["swRoot"] = m_env["bootDir"] + "/.software";
     m_env["docs"] = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    m_env["repoRoot"] = m_env["docs"] + "/.repo";
+    //m_env["repoRoot"] = m_env["docs"] + "/.repo";
+    m_env["repoRoot"] = m_env["bootDir"] + "/.repo";
     QDir(m_env["repoRoot"]).mkpath(".");
     m_env["msys2"] = m_env["swRoot"] + "/_msys2";
     qdebug_line1("SpiderCore::SpiderCore(3)");
@@ -199,7 +203,7 @@ QString SpiderCore::selectedRepoName()
 {
     // MySettings settings;
     QString repo = g_settings().value("selected/repoName").toString();
-    QString repoDir = m_env["docs"] + "/.repo/" + repo;
+    QString repoDir = m_env["repoRoot"] + "/" + repo;
     if (!QDir(repoDir).exists())
     {
         g_settings().setValue("selected/repoName", "");
@@ -244,7 +248,7 @@ void SpiderCore::open_nyagos(QWidget *widget, QString path)
                 QStringList() /*<< "--focus"*/ << R"(nt)"
                                                << "--title"
                                                << QString("(Nyagos) %1 + %2")
-                    .arg(uhomeName.isEmpty() ? ".repo" : uhomeName)
+                    .arg(uhomeName.isEmpty() ? "" : uhomeName)
                     .arg(msys2Name.isEmpty() ? "(none)" : msys2Name)
                                                << "-d" << path << R"(nyagos.exe)");
             proc->proc()->setWorkingDirectory(path);
@@ -290,7 +294,7 @@ void SpiderCore::open_bash(QWidget *widget, QString path)
             proc->proc()->setArguments(QStringList() << "nt"
                                                      << "--title"
                                                      << QString("(Bash) %1 + %2")
-                                       .arg(uhomeName.isEmpty() ? ".repo" : uhomeName)
+                                       .arg(uhomeName.isEmpty() ? "" : uhomeName)
                                        .arg(msys2Name.isEmpty() ? "(none)" : msys2Name)
                                                      << "-d" << path
                                                      << "nyagos.exe" << "-c"
@@ -792,9 +796,9 @@ void SpiderCore::refresh_repo(QWidget *widget, QString repoDir)
     strm << QString("set -uvx") << Qt::endl;
     strm << QString("set -e") << Qt::endl;
     strm << QString("pwd") << Qt::endl;
-    strm << QString("cd %1/.repo/%2").arg(g_core().env()["docs"]).arg(repo) << Qt::endl;
+    strm << QString("cd %1/%2").arg(g_core().env()["repoRoot"]).arg(repo) << Qt::endl;
     strm << QString("url=`git config --get remote.origin.url`") << Qt::endl;
-    strm << QString("cd %1/.repo").arg(g_core().env()["docs"]) << Qt::endl;
+    strm << QString("cd %1").arg(g_core().env()["repoRoot"]) << Qt::endl;
     strm << QString("mv %1 %2").arg(repo, tempPath) << Qt::endl;
     strm << QString("cmd.exe /c rmdir /s /q '%1'").arg(np(tempPath)) << Qt::endl;
     strm << QString("git clone --recursive $url %1").arg(repo) << Qt::endl;
@@ -808,10 +812,9 @@ void SpiderCore::open_msys2(QWidget *widget, QString msys2Dir, QString currentDi
     qDebug() << "SpiderCore::open_msys2():" << msys2Dir;
     auto uhomeName = this->selectedRepoName();
     auto msys2Name = QFileInfo(msys2Dir).fileName(); // this->selectedMsys2Name();
-    // QString repoDir = m_env["docs"] + "/.repo/" + uhomeName;
     if (currentDir.isEmpty())
     {
-        currentDir = m_env["docs"] + "/.repo/" + uhomeName;
+        currentDir = m_env["repoRoot"] + "/" + uhomeName;
     }
     SpiderProcess *sproc = new SpiderProcess(
         [widget, currentDir, uhomeName, msys2Name](SpiderProcStage stage, SpiderProcess *proc)
@@ -823,7 +826,7 @@ void SpiderCore::open_msys2(QWidget *widget, QString msys2Dir, QString currentDi
             proc->proc()->setArguments(QStringList() << "nt"
                                                      << "--title"
                                                      << QString("(Msys2) %1 + %2")
-                                       .arg(uhomeName.isEmpty() ? ".repo" : uhomeName)
+                                       .arg(uhomeName.isEmpty() ? "" : uhomeName)
                                        .arg(msys2Name.isEmpty() ? "(none)" : msys2Name)
                                                      << "-d" << currentDir << "cmd.exe"
                                                      << "/c"
@@ -871,7 +874,6 @@ void SpiderCore::remove_msys2(QWidget *widget, QString name)
 }
 void SpiderCore::open_git_page(QWidget *widget, QString repoDir)
 {
-    // QString repoDir = m_env["docs"] + "/.repo/" + repo;
     QProcess proc;
     proc.setProgram(ProgramDB().which("git.exe"));
     proc.setArguments(QStringList() << "config"

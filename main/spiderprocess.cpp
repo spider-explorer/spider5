@@ -4,12 +4,10 @@
 SpiderProcess::SpiderProcess(SpiderProcCallback callback)
 {
     auto uhomeName = g_core().selectedRepoName();
-    QString uhomeDir = g_core().env()["docs"] + "/.repo/" + uhomeName;
+    QString uhomeDir = g_core().env()["repoRoot"] + "/" + uhomeName;
     if (uhomeName.isEmpty())
     {
-        uhomeDir = g_core().env()["docs"] + "/.repo";
-        QDir docsDir = g_core().env()["docs"];
-        docsDir.mkpath(".repo");
+        uhomeDir = g_core().env()["repoRoot"];
     }
     QString cmd = uhomeDir + "/cmd";
     QString pathAdded = np(cmd);
@@ -39,7 +37,7 @@ SpiderProcess::SpiderProcess(SpiderProcCallback callback)
     settings.settings().endGroup();
     env.insert("HOME", np(uhomeDir));
     env.insert("PATH", pathAdded + ";" + g_core().env()["path"]);
-    env.insert("REPO", QString(g_core().env()["docs"] + "/.repo").replace("/", "\\"));
+    env.insert("REPO", QString(g_core().env()["repoRoot"]).replace("/", "\\"));
     env.insert("MSYS2", np(msys2Dir));
     env.insert("MINGW_CHOST", "x86_64-w64-mingw32");
     env.insert("MINGW_PACKAGE_PREFIX", "mingw-w64-x86_64");

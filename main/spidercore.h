@@ -16,7 +16,7 @@ using ProcCallback = std::function<void (QProcess &proc, ProcStage stage, bool s
 class SpiderCore
 {
 public:
-    explicit SpiderCore(QSplashScreen &splash, const QString &mainDllPath);
+    explicit SpiderCore(QSplashScreen &splash, const QString &bootExePath, const QString &mainDllPath);
     QSplashScreen &splash();
     QMap<QString, QString> &env();
     JsonSettings &settings();
