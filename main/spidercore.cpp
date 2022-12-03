@@ -126,7 +126,10 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
     //
     QFileInfo bootExe(bootExePath);
     QFileInfo mainDll(mainDllPath);
-    m_env["bootDir"] = bootExe.absolutePath();
+    m_env["bootDir"] =
+        bootExe.absolutePath().endsWith("/") ?
+        bootExe.absolutePath().replace(QRegExp("/$"), "") :
+        bootExe.absolutePath();
     m_env["dir"] = mainDll.absolutePath();
     //m_env["dir"] = mainDll.path();
     m_env["temp"] = m_env["dir"] + "/temp";
