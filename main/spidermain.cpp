@@ -37,7 +37,7 @@ SpiderMain::SpiderMain(QWidget *parent) : QMainWindow(parent), ui(new Ui::Spider
     ui->toolBar->setStyleSheet(
         "QToolButton:!hover {background-color:lightgray} QToolBar {background: rgb(30, 30, 30)}");
     QString version = SPIDER_VERSION;
-    this->setWindowTitle(QString("Spider4 v%1").arg(version));
+    this->setWindowTitle(QString("Spider5 v%1").arg(version));
     //
     QToolBar *explorerTopToolbar = ui->explorerWidget->topToolbar(); // new QToolBar(this);
     explorerTopToolbar->addAction(ui->actionChrome);

@@ -52,14 +52,17 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
         .arg(progName)
         .arg(version),
         Qt::AlignLeft, Qt::white);
-    QString installDir = m_env["swRoot"] + QString("/%1/%2").arg(progName).arg(version);
-    QString junctionDir = m_env["swRoot"] + QString("/%1/current").arg(progName);
+    //QString installDir = m_env["swRoot"] + QString("/%1/%2").arg(progName).arg(version);
+    QString installDir = m_env["swRoot"] + QString("/%1/current").arg(progName);
+    QString installDirJson = m_env["swRoot"] + QString("/%1/current/%1-%2.json").arg(progName).arg(version);
+    //QString junctionDir = m_env["swRoot"] + QString("/%1/current").arg(progName);
     qdebug_line1("SpiderCore::prepareProgram(5)");
     qdebug_line2("installDir", installDir);
-    if (!QFileInfo(installDir).exists())
+    if (!QFileInfo(installDirJson).exists())
     {
         qdebug_line1("SpiderCore::prepareProgram(6)");
         qdebug_line2("(!QFileInfo(installDir).exists())", installDir);
+        QDir(installDir).removeRecursively();
         qDebug() << extract_archive(dlPath, installDir,
                                     [this, &locale, progName, version](qint64 extractSizeTotal)
         {
@@ -70,14 +73,20 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
                 .arg(locale.formattedDataSize(extractSizeTotal)),
                 Qt::AlignLeft, Qt::white);
         });
-        JunctionManager().remove(junctionDir);
-        JunctionManager().create(junctionDir, installDir);
+        QFile f(installDirJson);
+        if (f.open(QIODevice::WriteOnly))
+        {
+            f.write("{}");
+            f.close();
+        }
+        //JunctionManager().remove(junctionDir);
+        //JunctionManager().create(junctionDir, installDir);
     }
     qdebug_line1("SpiderCore::prepareProgram(7)");
-    if (!QFileInfo(junctionDir).exists())
-    {
-        JunctionManager().create(junctionDir, installDir);
-    }
+    //if (!QFileInfo(junctionDir).exists())
+    //{
+    //    JunctionManager().create(junctionDir, installDir);
+    //}
     qdebug_line1("SpiderCore::prepareProgram(8)");
     if(!path.isEmpty())
     {
@@ -88,18 +97,21 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
             QString pathElem = pathList[i];
             if(pathElem==".")
             {
-                pathElem = junctionDir;
+                //pathElem = junctionDir;
+                pathElem = installDir;
             }
             else
             {
-                pathElem = junctionDir + pathElem;
+                //pathElem = junctionDir + pathElem;
+                pathElem = installDir + pathElem;
             }
             pathList[i] = np(pathElem);
         }
         m_env["path"] = pathList.join(";") + ";" + m_env["path"];
     }
     qdebug_line2("SpiderCore::prepareProgram(10)", progName);
-    return junctionDir;
+    //return junctionDir;
+    return installDir;
 }
 SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const QString &mainDllPath) : m_splash(splash), m_settings("spider")
 {

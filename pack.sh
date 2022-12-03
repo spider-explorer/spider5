@@ -3,9 +3,9 @@ set -uvx
 set -e
 cwd=`pwd`
 gh auth login --hostname github.com --git-protocol https --web
-killall boot4-x86_64-static || true
+killall boot5-x86_64-static || true
 sleep 3
-cp -p boot4-x86_64-static.exe ~/../
+#cp -p boot5-x86_64-static.exe ~/../
 rm -rf *.tmp
 find .  -maxdepth 2 -iname *.h -o -iname *.cpp | xargs uncrustify -l CPP --replace --no-backup
 #astyle --recursive --ascii --style=allman --suffix=none *.java,*.c,*.cpp,*.cxx,*.h,*.hpp,*.hxx | sed -e "/Unchanged  /d"
@@ -41,7 +41,7 @@ cat << EOS > spider.json
     ],
     "shortcuts": [
         [
-            "boot4-x86_64-static.exe",
+            "boot5-x86_64-static.exe",
             "Spider2",
             "--dummy"
         ]
