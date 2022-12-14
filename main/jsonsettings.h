@@ -11,6 +11,7 @@ class JsonSettings
 {
 public:
     explicit JsonSettings(const QString &application);
+    explicit JsonSettings(QFile &file);
     explicit JsonSettings(const QUrl &url);
     virtual ~JsonSettings();
     QString fileName();

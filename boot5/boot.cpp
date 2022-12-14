@@ -35,10 +35,24 @@ static QString prepareMain(QSplashScreen &splash)
     QJsonObject object = jsonDoc.object();
     qDebug() << object.keys();
     QString version = object["version"].toString();
-    qDebug() << version;
+    qDebug() << "version=" << version;
     QJsonArray array = object["url"].toArray();
     QString urlString = array[0].toString();
     qDebug() << urlString;
+    QString installDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+                         QString("/.spider5/.install/%1").arg(version);
+    QString junctionDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
+                          QString("/.spider5/.install/current");
+    if(version=="")
+    {
+        QMessageBox::information(nullptr, "確認", "ネット接続が失敗しました");
+#ifdef QT_STATIC_BUILD
+        QString mainDll = junctionDir + "/main-x86_64-static.dll";
+#else
+        QString mainDll = junctionDir + "/main-x86_64.dll";
+#endif
+        return mainDll;
+    }
     splash.showMessage("Spider本体を準備中...", Qt::AlignLeft, Qt::white);
     QString dlPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
                      QString("/.spider5/.install/%1.7z").arg(version);
@@ -68,10 +82,6 @@ static QString prepareMain(QSplashScreen &splash)
         qDebug() << u8"本体のダウンロードが失敗しました";
         QMessageBox::information(nullptr, "確認", "本体のダウンロードが失敗しました");
     }
-    QString installDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                         QString("/.spider5/.install/%1").arg(version);
-    QString junctionDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                          QString("/.spider5/.install/current");
     qdebug_line();
     if (!QFileInfo(installDir).exists())
     {

@@ -14,6 +14,14 @@ JsonSettings::JsonSettings(const QString &application) : m_type(JSET_APPL)
         m_varMap = jsonDoc.object().toVariantMap();
     }
 }
+JsonSettings::JsonSettings(QFile &file)
+{
+    if (!file.open(QIODevice::ReadOnly))
+    {
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
+        m_varMap = jsonDoc.object().toVariantMap();
+    }
+}
 JsonSettings::JsonSettings(const QUrl &url) : m_type(JSET_URL)
 {
     JNetworkManager nm;

@@ -184,7 +184,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         }
         else
         {
-            JsonSettings localSoftwereSettings(QUrl::fromLocalFile(software_settings_json.fileName()));
+            JsonSettings localSoftwereSettings(software_settings_json);
             appList = localSoftwereSettings.value("software").toList();
         }
         for(int i=0; i<appList.size(); i++)
