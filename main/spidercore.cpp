@@ -27,7 +27,8 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
     QString ext = progEntry["ext"].toString();
     QString path = progEntry["path"].toString();
     m_splash.showMessage(QString("%1 を更新中(%2)...").arg(progName).arg(version), Qt::AlignLeft, Qt::white);
-    QString dlPath = m_env["swRoot"] + QString("/%1/%1-%2.%3").arg(progName).arg(version).arg(ext);
+    ////QString dlPath = m_env["swRoot"] + QString("/%1/%1-%2.%3").arg(progName).arg(version).arg(ext);
+    QString dlPath = m_env["dir"] + QString("/.cache/%1-%2.%3").arg(progName).arg(version).arg(ext);
     QLocale locale;
     qdebug_line1("SpiderCore::prepareProgram(2)");
     if (!QFileInfo(dlPath).exists())
