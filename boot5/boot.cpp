@@ -1,4 +1,4 @@
-﻿#include <winSock2.h>
+#include <winSock2.h>
 //#include "jinstaller.h"
 #include <QApplication>
 #include <QtCore>
@@ -39,32 +39,27 @@ static QString prepareMain(QSplashScreen &splash)
     QJsonArray array = object["url"].toArray();
     QString urlString = array[0].toString();
     qDebug() << urlString;
-    QString installDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                         QString("/.spider5/.install/%1").arg(version);
-    QString junctionDir = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                          QString("/.spider5/.install/current");
+    QString installDir = qApp->applicationDirPath() +
+                         QString("/.cache/.spider5/").replace("//", "/");
+    QString jsonPath = installDir +
+                          QString("/boot-%1.json").arg(version);
     if(version=="")
     {
         QMessageBox::information(nullptr, "確認", "ネット接続が失敗しました");
 #ifdef QT_STATIC_BUILD
-        QString mainDll = junctionDir + "/main-x86_64-static.dll";
+        QString mainDll = installDir + "/main-x86_64-static.dll";
 #else
-        QString mainDll = junctionDir + "/main-x86_64.dll";
+        QString mainDll = installDir + "/main-x86_64.dll";
 #endif
         return mainDll;
     }
     splash.showMessage("Spider本体を準備中...", Qt::AlignLeft, Qt::white);
-    QString dlPath = QStandardPaths::writableLocation(QStandardPaths::HomeLocation) +
-                     QString("/.spider5/.install/%1.7z").arg(version);
+    QString dlPath = qApp->applicationDirPath() +
+                     QString("/.cache/%1.7z").arg(version).replace("//", "/");
     qdebug_line();
     if (!QFileInfo(dlPath).exists())
     {
         qdebug_line();
-        if(true)/**/
-        {
-            QString parentPath = QFileInfo(dlPath).absolutePath();
-            QDir(parentPath).removeRecursively();
-        }
         qDebug() << nm.getBatchAsFile(
             urlString, dlPath,
             [&splash, &locale](QNetworkReply *reply)
@@ -83,51 +78,34 @@ static QString prepareMain(QSplashScreen &splash)
         QMessageBox::information(nullptr, "確認", "本体のダウンロードが失敗しました");
     }
     qdebug_line();
+    if(!QFileInfo(jsonPath).exists())
+    {
+        QDir(installDir).removeRecursively();
+    }
+    qdebug_line();
     if (!QFileInfo(installDir).exists())
     {
         qdebug_line();
-#if 0x1
         qDebug() << extract_archive(dlPath, installDir, [&splash, &locale](qint64 extractSizeTotal)
         {
             splash.showMessage(
                 QString("Spider本体を展開中...%1").arg(locale.formattedDataSize(extractSizeTotal)),
                 Qt::AlignLeft, Qt::white);
         });
-#else
-        qDebug() << "dlPath:" << dlPath;
-        qDebug() << "installDir:" << installDir;
-        std::size_t archive_id = cli.extract_archive(
-            dlPath.toStdString(),
-            installDir.toStdString());
         qdebug_line();
-        while(true)
+        QFile jsonFile(jsonPath);
+        if(jsonFile.open(QIODevice::WriteOnly))
         {
-            std::int64_t progress = cli.extract_progress(archive_id);
-            splash.showMessage(
-                QString("Spider本体を展開中...%1").arg(locale.formattedDataSize(progress)),
-                Qt::AlignLeft, Qt::white);
-            qdebug_line2("progress=", progress);
-            QThread::msleep(100);
-            if (progress < 0) break;
+            jsonFile.write("{}");
+            jsonFile.close();
         }
-#endif
         qdebug_line();
-        JunctionManager().remove(junctionDir);
-        bool created = JunctionManager().create(junctionDir, installDir);
-        qdebug_line1(created);
-    }
-    qdebug_line();
-    if (!QFileInfo(junctionDir).exists())
-    {
-        qdebug_line();
-        bool created = JunctionManager().create(junctionDir, installDir);
-        qdebug_line1(created);
     }
     qdebug_line();
 #ifdef QT_STATIC_BUILD
-    QString mainDll = junctionDir + "/main-x86_64-static.dll";
+    QString mainDll = installDir + "/main-x86_64-static.dll";
 #else
-    QString mainDll = junctionDir + "/main-x86_64.dll";
+    QString mainDll = installDir + "/main-x86_64.dll";
 #endif
     qdebug_line();
     return mainDll;
