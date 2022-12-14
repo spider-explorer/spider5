@@ -18,7 +18,7 @@ JsonSettings::JsonSettings(const QString &application) : m_type(JSET_APPL)
 JsonSettings::JsonSettings(QFile &file)
 {
     QMessageBox::information(nullptr, "確認", QString("file.exists()=%1").arg(file.exists()));
-    if (!file.open(QIODevice::ReadOnly))
+    if (file.open(QIODevice::ReadOnly))
     {
         QByteArray bytes = file.readAll();
         QMessageBox::information(nullptr, "確認", QString("bytes=%1").arg(QString::fromUtf8(bytes)));
