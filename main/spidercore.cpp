@@ -187,6 +187,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         {
             JsonSettings localSoftwereSettings(software_settings_json);
             appList = localSoftwereSettings.value("software").toList();
+            QMessageBox::information(nullptr, "確認", QString("appList.size(2)=%1").arg(appList.size()));
         }
         for(int i=0; i<appList.size(); i++)
         {
