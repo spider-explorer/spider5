@@ -87,7 +87,8 @@ MainWindow::MainWindow(QWidget *parent) : QMainWindow(parent), ui(new Ui::MainWi
 #else
 #define STRING(str) #str
     QString version = STRING(SPIDER_VERSION);
-    this->setWindowTitle(QString("Spider5 v%1").arg(version));
+    //this->setWindowTitle(QString("Spider5 v%1").arg(version));
+    this->setWindowTitle(QString("Spider5 (%1)").arg(g_core().env()["bootDir"]));
 #endif
     this->reloadNameList();
     connect(&m_reload_timer, &QTimer::timeout, [this]()
