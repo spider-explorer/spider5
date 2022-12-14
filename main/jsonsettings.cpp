@@ -1,6 +1,7 @@
 ﻿#include "jsonsettings.h"
 #include "variantserializer.h"
 #include "jnetwork.h"
+#include <QMessageBox>
 JsonSettings::JsonSettings(const QString &application) : m_type(JSET_APPL)
 {
     QString homeLocation = QStandardPaths::writableLocation(QStandardPaths::HomeLocation);
@@ -18,9 +19,15 @@ JsonSettings::JsonSettings(QFile &file)
 {
     if (!file.open(QIODevice::ReadOnly))
     {
-        QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
+        QByteArray bytes = file.readAll();
+        QMessageBox::information(nullptr, "確認", QString("bytes=%1").arg(QString::fromUtf8(bytes)));
+        QJsonDocument jsonDoc = QJsonDocument::fromJson(bytes);
         m_varMap = jsonDoc.object().toVariantMap();
         file.close();
+    }
+    else
+    {
+        QMessageBox::information(nullptr, "確認", "could not open file");
     }
 }
 JsonSettings::JsonSettings(const QUrl &url) : m_type(JSET_URL)
