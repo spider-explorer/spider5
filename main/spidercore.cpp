@@ -175,6 +175,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         //QStringList appList = softwareSettings.value("software").toMap().keys();
         QVariantList appList = softwareSettings.value("software").toList();
         QFile software_settings_json(m_env["cacheDir"] + "/software-settings.json");
+        QMessageBox::information(nullptr, "確認", QString("appList.size()=%1").arg(appList.size()));
         if(appList.size()>0)
         {
             if(software_settings_json.open(QIODevice::WriteOnly))
