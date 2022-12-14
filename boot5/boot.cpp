@@ -42,7 +42,7 @@ static QString prepareMain(QSplashScreen &splash)
     QString installDir = qApp->applicationDirPath() +
                          QString("/.cache/.spider5/").replace("//", "/");
     QString jsonPath = installDir +
-                          QString("/boot-%1.json").arg(version);
+                       QString("/boot-%1.json").arg(version);
     if(version=="")
     {
         QMessageBox::information(nullptr, "確認", "ネット接続が失敗しました");
