@@ -54,9 +54,8 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
         .arg(version),
         Qt::AlignLeft, Qt::white);
     //QString installDir = m_env["swRoot"] + QString("/%1/%2").arg(progName).arg(version);
-    QString installDir = m_env["swRoot"] + QString("/%1/current").arg(progName);
-    QString installDirJson = m_env["swRoot"] + QString("/%1/current/%1-%2.json").arg(progName).arg(version);
-    //QString junctionDir = m_env["swRoot"] + QString("/%1/current").arg(progName);
+    QString installDir = m_env["swRoot"] + QString("/%1").arg(progName);
+    QString installDirJson = m_env["swRoot"] + QString("/%1/%1-%2.json").arg(progName).arg(version);
     qdebug_line1("SpiderCore::prepareProgram(5)");
     qdebug_line2("installDir", installDir);
     if (!QFileInfo(installDirJson).exists())
