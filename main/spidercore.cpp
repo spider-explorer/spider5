@@ -34,8 +34,8 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
     if (!QFileInfo(dlPath).exists())
     {
         qdebug_line1("SpiderCore::prepareProgram(3)");
-        QString parentPath = QFileInfo(dlPath).absolutePath();
-        QDir(parentPath).removeRecursively();
+        //QString parentPath = QFileInfo(dlPath).absolutePath();
+        //QDir(parentPath).removeRecursively();
         qDebug() << nm.getBatchAsFile(urlString, dlPath,
                                       [this, &locale, progName, version](QNetworkReply *reply)
         {
