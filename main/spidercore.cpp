@@ -175,7 +175,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         //QStringList appList = softwareSettings.value("software").toMap().keys();
         QVariantList appList = softwareSettings.value("software").toList();
         QFile software_settings_json(m_env["cacheDir"] + "/software-settings.json");
-        QMessageBox::information(nullptr, "確認2", QString("appList.size()=%1").arg(appList.size()));
+        //QMessageBox::information(nullptr, "確認2", QString("appList.size()=%1").arg(appList.size()));
         if(appList.size()>0)
         {
             if(software_settings_json.open(QIODevice::WriteOnly))
@@ -185,10 +185,10 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         }
         else
         {
-            QMessageBox::information(nullptr, "確認2", QString("software_settings_json.fileName()=%1").arg(software_settings_json.fileName()));
+            //QMessageBox::information(nullptr, "確認2", QString("software_settings_json.fileName()=%1").arg(software_settings_json.fileName()));
             JsonSettings localSoftwereSettings(software_settings_json);
             appList = localSoftwereSettings.value("software").toList();
-            QMessageBox::information(nullptr, "確認2", QString("appList.size(2)=%1").arg(appList.size()));
+            //QMessageBox::information(nullptr, "確認2", QString("appList.size(2)=%1").arg(appList.size()));
         }
         for(int i=0; i<appList.size(); i++)
         {
