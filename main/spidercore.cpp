@@ -132,6 +132,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         bootExe.absolutePath().replace(QRegExp("/$"), "") :
         bootExe.absolutePath();
     m_env["cacheDir"] = m_env["bootDir"] + QString("/.cache");
+    QDir(m_env["cacheDir"]).mkpath(".");
     m_env["dir"] = mainDll.absolutePath();
     //m_env["dir"] = mainDll.path();
     m_env["temp"] = m_env["dir"] + "/temp";
@@ -173,13 +174,18 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         ////prepareProgram(softwareSettings, "busybox");
         //QStringList appList = softwareSettings.value("software").toMap().keys();
         QVariantList appList = softwareSettings.value("software").toList();
-        QFile spider_software_json(m_env["cacheDir"] + "/spider-software.json");
+        QFile software_settings_json(m_env["cacheDir"] + "/software-settings.json");
         if(appList.size()>0)
         {
-            if(spider_software_json.open(QIODevice::WriteOnly))
+            if(software_settings_json.open(QIODevice::WriteOnly))
             {
-                spider_software_json.write(QVariant(settingsSettings.object()).toJsonDocument().toJson());
+                software_settings_json.write(QJsonDocument::fromVariant(softwareSettings.object()).toJson());
             }
+        }
+        else
+        {
+            JsonSettings localSoftwereSettings(QUrl::fromLocalFile(software_settings_json.fileName()));
+            appList = localSoftwereSettings.value("software").toList();
         }
         for(int i=0; i<appList.size(); i++)
         {
