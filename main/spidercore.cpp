@@ -28,7 +28,7 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
     QString path = progEntry["path"].toString();
     m_splash.showMessage(QString("%1 を更新中(%2)...").arg(progName).arg(version), Qt::AlignLeft, Qt::white);
     ////QString dlPath = m_env["swRoot"] + QString("/%1/%1-%2.%3").arg(progName).arg(version).arg(ext);
-    QString dlPath = m_env["bootDir"] + QString("/.cache/%1-%2.%3").arg(progName).arg(version).arg(ext);
+    QString dlPath = m_env["cacheDir"] + QString("/%1-%2.%3").arg(progName).arg(version).arg(ext);
     QLocale locale;
     qdebug_line1("SpiderCore::prepareProgram(2)");
     if (!QFileInfo(dlPath).exists())
@@ -131,6 +131,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         bootExe.absolutePath().endsWith("/") ?
         bootExe.absolutePath().replace(QRegExp("/$"), "") :
         bootExe.absolutePath();
+    m_env["cacheDir"] = m_env["bootDir"] + QString("/.cache");
     m_env["dir"] = mainDll.absolutePath();
     //m_env["dir"] = mainDll.path();
     m_env["temp"] = m_env["dir"] + "/temp";
@@ -172,6 +173,14 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         ////prepareProgram(softwareSettings, "busybox");
         //QStringList appList = softwareSettings.value("software").toMap().keys();
         QVariantList appList = softwareSettings.value("software").toList();
+        QFile spider_software_json(m_env["cacheDir"] + "/spider-software.json");
+        if(appList.size()>0)
+        {
+            if(spider_software_json.open(QIODevice::WriteOnly))
+            {
+                spider_software_json.write(QVariant(settingsSettings.object()).toJsonDocument().toJson());
+            }
+        }
         for(int i=0; i<appList.size(); i++)
         {
             QString progDir = prepareProgram(appList[i].toMap());
