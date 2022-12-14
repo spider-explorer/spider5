@@ -63,6 +63,7 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
         qdebug_line1("SpiderCore::prepareProgram(6)");
         qdebug_line2("(!QFileInfo(installDir).exists())", installDir);
         QDir(installDir).removeRecursively();
+        QDir(installDir).mkpath(".");
         qDebug() << extract_archive(dlPath, installDir,
                                     [this, &locale, progName, version](qint64 extractSizeTotal)
         {
