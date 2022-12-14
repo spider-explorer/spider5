@@ -20,6 +20,7 @@ JsonSettings::JsonSettings(QFile &file)
     {
         QJsonDocument jsonDoc = QJsonDocument::fromJson(file.readAll());
         m_varMap = jsonDoc.object().toVariantMap();
+        file.close();
     }
 }
 JsonSettings::JsonSettings(const QUrl &url) : m_type(JSET_URL)
