@@ -181,6 +181,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
             if(software_settings_json.open(QIODevice::WriteOnly))
             {
                 software_settings_json.write(QJsonDocument::fromVariant(softwareSettings.object()).toJson());
+                software_settings_json.close();
             }
         }
         else
