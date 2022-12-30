@@ -1,12 +1,12 @@
 {
-    "version": "2022.12.31.04.19.40",
+    "version": "2022.12.31.04.22.37",
     "description": "",
     "homepage": "",
     "license": "MIT",
     "depends": [
     ],
     "url": [
-        "https://github.com/spider-explorer/spider5/releases/download/v2022.12.31.04.19.40/spider-v2022.12.31.04.19.40.zip"
+        "https://github.com/spider-explorer/spider5/releases/download/v2022.12.31.04.22.37/spider-v2022.12.31.04.22.37.zip"
     ],
     "hash": [
         "4df541b6e603d9e2ba95c9a2aed542d7b9b4ce22812fcb5a20912115227bf990"

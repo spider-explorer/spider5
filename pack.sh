@@ -57,4 +57,4 @@ git tag -a v$ts -mv$ts
 git push origin v$ts
 git push
 gh release list | sed 's/|/ /' | awk '{print $1, $8}' | while read -r line; do gh release delete -y "$line"; done
-gh release create v$ts "upload.tmp/spider-release/spider-v$ts.zip" --generate-notes --target main
+gh release create v$ts "upload.tmp/spider-release/spider-v$ts.zip" --repo spider-explorer/spider5 --generate-notes --target main
