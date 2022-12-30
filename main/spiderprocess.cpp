@@ -35,6 +35,7 @@ SpiderProcess::SpiderProcess(SpiderProcCallback callback)
         wslenv.append(key);
     }
     settings.settings().endGroup();
+    env.insert("SPIDER", QString(g_core().env()["bootDir"]).replace("/", "\\"));
     env.insert("HOME", np(uhomeDir));
     env.insert("PATH", pathAdded + ";" + g_core().env()["path"]);
     env.insert("REPO", QString(g_core().env()["repoRoot"]).replace("/", "\\"));
