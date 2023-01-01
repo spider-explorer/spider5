@@ -15,7 +15,8 @@ SpiderProcess::SpiderProcess(SpiderProcCallback callback)
     QStringList subCmdList = cmdDir.entryList(QDir::Dirs);
     foreach(QString subCmd, subCmdList)
     {
-        pathAdded += QString(";%1\\%2").arg(cmd).arg(subCmd);
+        if (subCmd=="." || subCmd=="..") continue;
+        pathAdded += QString(";%1\\%2").arg(cmd).arg(subCmd).replace("/", "\\");
     }
     //auto msys2Name = g_core().selectedMsys2Name();
     QString msys2Dir = np(g_core().env()["swRoot"] + "/_msys2/current");
