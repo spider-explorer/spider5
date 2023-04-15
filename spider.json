@@ -1,15 +1,15 @@
 {
-    "version": "2023.04.16.01.50.46",
+    "version": "2023.04.16.01.52.46",
     "description": "",
     "homepage": "",
     "license": "MIT",
     "depends": [
     ],
     "url": [
-        "https://github.com/spider-explorer/spider5/releases/download/v2023.04.16.01.50.46/spider-v2023.04.16.01.50.46.zip"
+        "https://github.com/spider-explorer/spider5/releases/download/v2023.04.16.01.52.46/spider-v2023.04.16.01.52.46.zip"
     ],
     "hash": [
-        "30fee7b422f17e44d4e0849f038e47210184a626a66c2707b1f314005e925b19"
+        "b411d387fa2e942eec2d5da292265a85336b3e6e45f3bb1ac475ac96be20b93e"
     ],
     "bin": [
         [
