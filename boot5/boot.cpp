@@ -62,11 +62,11 @@ static QString prepareMain(QSplashScreen &splash)
         qdebug_line();
         qDebug() << nm.getBatchAsFile(
             urlString, dlPath,
-            [&splash, &locale](qint64 progress)
+            [&splash, &locale](qint64 progress, qint64 size)
         {
             splash.showMessage(
-                QString("Spider本体をダウンロード中...%1")
-                .arg(locale.formattedDataSize(progress)),
+                QString("Spider本体をダウンロード中...%1/%2")
+                .arg(locale.formattedDataSize(progress)).arg(locale.formattedDataSize(size)),
                 Qt::AlignLeft, Qt::white);
         });
     }

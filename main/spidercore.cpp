@@ -37,13 +37,13 @@ QString SpiderCore::prepareProgram(const QVariantMap &progEntry)
         //QString parentPath = QFileInfo(dlPath).absolutePath();
         //QDir(parentPath).removeRecursively();
         qDebug() << nm.getBatchAsFile(urlString, dlPath,
-                                      [this, &locale, progName, version](qint64 progress)
+                                      [this, &locale, progName, version](qint64 progress, qint64 size)
         {
             m_splash.showMessage(
-                QString("%1 を更新中(%2)...ダウンロード中: %3")
+                QString("%1 を更新中(%2)...ダウンロード中: %3/%4")
                 .arg(progName)
                 .arg(version)
-                .arg(locale.formattedDataSize(progress)),
+                .arg(locale.formattedDataSize(progress)).arg(locale.formattedDataSize(size)),
                 Qt::AlignLeft, Qt::white);
         });
     }
