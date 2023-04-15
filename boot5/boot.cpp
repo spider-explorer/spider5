@@ -1,4 +1,4 @@
-#include <winSock2.h>
+﻿#include <winSock2.h>
 //#include "jinstaller.h"
 #include <QApplication>
 #include <QtCore>
@@ -62,11 +62,11 @@ static QString prepareMain(QSplashScreen &splash)
         qdebug_line();
         qDebug() << nm.getBatchAsFile(
             urlString, dlPath,
-            [&splash, &locale](QNetworkReply *reply)
+            [&splash, &locale](qint64 progress)
         {
             splash.showMessage(
                 QString("Spider本体をダウンロード中...%1")
-                .arg(locale.formattedDataSize(reply->bytesAvailable())),
+                .arg(locale.formattedDataSize(progress)),
                 Qt::AlignLeft, Qt::white);
         });
     }
