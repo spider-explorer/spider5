@@ -334,7 +334,7 @@ void SpiderCore::open_bash(QWidget *widget, QString path)
                                                      << "-d" << path
                                        //<< "nyagos.exe" << "-c"
                                        //<< "busybox.exe bash"
-                                                     << "busybox.exe bash -l"
+                                                     << "busybox.exe" << "bash" << "-l"
                                        );
             proc->proc()->setWorkingDirectory(path);
         }
