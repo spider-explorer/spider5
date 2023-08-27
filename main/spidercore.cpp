@@ -194,6 +194,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
         for(int i=0; i<appList.size(); i++)
         {
             QString progDir = prepareProgram(appList[i].toMap());
+#if 0x0
             if (appList[i].toMap()["name"].toString() == "git")
             {
                 QProcess gitProc;
@@ -211,6 +212,7 @@ SpiderCore::SpiderCore(QSplashScreen &splash, const QString &bootExePath, const 
                 gitProc.start();
                 gitProc.waitForFinished();
             }
+#endif
         }
         qdebug_line();
     }
